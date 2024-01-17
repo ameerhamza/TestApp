@@ -47,6 +47,7 @@ namespace TestApp.API.Controllers
         /// <returns>A newly created person.</returns>
         /// <response code="200">Returns the newly created person.</response>
         /// <response code="400">If the request is invalid.</response>
+        /// /// <response code="409">If the person already exists.</response>
         [HttpPost]
         public async Task<IActionResult> AddPerson([FromBody] Person person)
         {
@@ -59,7 +60,7 @@ namespace TestApp.API.Controllers
             catch (AlreadyExistsException aex)
             {
                 _logger.LogError(aex, aex.Message, person);
-                return BadRequest(aex.Message);
+                return StatusCode(409, aex.Message);
             }
             catch (Exception e)
             {
