@@ -1,0 +1,36 @@
+# Node.js
+node_modules/
+
+# Dependency directories
+/dist/
+/tmp/
+/out-tsc/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Compiled output
+*.compiled.ts
+
+# End of Line
+*.bak
+*.swp
+
+# IntelliJ
+.idea/
+
+# VSCode
+.vscode/
+
+# NgRx state logs
+/redux-devtools
+
+# npm
+npm-debug.log

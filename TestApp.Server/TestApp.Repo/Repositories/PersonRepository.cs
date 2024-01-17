@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using TestApp.Repo.DataStores;
 using TestApp.Services.Contracts;
 using TestApp.Services.Exceptions;
@@ -13,11 +14,13 @@ namespace TestApp.Repo.Repositories
 
     public class PersonRepository : IPersonRepository
     {
-        private readonly IDataStore<IPerson> _dataStore;
+        private readonly IDataStore<Person> _dataStore;
+        private readonly IMapper _mapper;
 
-        public PersonRepository(IDataStore<IPerson> dataStore)
+        public PersonRepository(IDataStore<Person> dataStore, IMapper mapper)
         {
             _dataStore = dataStore;
+            _mapper = mapper;
         }
      
         public async Task<IPerson> AddPersonAsync(IPerson person)
@@ -31,7 +34,7 @@ namespace TestApp.Repo.Repositories
                 throw new AlreadyExistsException($"Person with name {person.FirstName} {person.LastName} already exists");
             }
 
-            await _dataStore.AddAsync(person);
+            await _dataStore.AddAsync(_mapper.Map<Person>(person));
             return await Task.FromResult(person);
         }
     }

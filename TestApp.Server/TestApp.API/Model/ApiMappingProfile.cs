@@ -15,6 +15,8 @@ namespace TestApp.API.Model
                 .ConstructUsing(src => IPerson.Create(src.FirstName, src.LastName))
 
                 .ReverseMap(); // Th
+
+            CreateMap<IPerson, Services.Impl.Person>();
         }
     }
 

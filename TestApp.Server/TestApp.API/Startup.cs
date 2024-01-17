@@ -32,8 +32,18 @@ namespace TestApp.API
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("ClientSide",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
+            });
 
-           
+
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .WriteTo.File("Data/logs/log.txt", rollingInterval: RollingInterval.Day)
@@ -55,17 +65,17 @@ namespace TestApp.API
 
         private static void RegisterApplicationContracts(IServiceCollection services)
         {
-            services.AddSingleton<IPerson, TestApp.Services.Impl.Person>();
+            services.AddSingleton<IPerson, Services.Impl.Person>();
             services.AddSingleton<IPersonRepository, PersonRepository>();
             services.AddSingleton<IPersonService, PersonService>();
 
-            services.AddSingleton<IDataStore<IPerson>>(provider =>
+            services.AddSingleton<IDataStore<Services.Impl.Person>>(provider =>
             {
                 var env = provider.GetRequiredService<IWebHostEnvironment>();
                 var basePath = env.ContentRootPath + "\\Data"; 
                 var fileName = "persons.json"; 
 
-                return new JsonDataStore<IPerson>(basePath, fileName);
+                return new JsonDataStore<Services.Impl.Person>(basePath, fileName);
             });
         }
 
@@ -89,6 +99,7 @@ namespace TestApp.API
 
             app.UseAuthorization();
 
+            app.UseCors("ClientSide");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
