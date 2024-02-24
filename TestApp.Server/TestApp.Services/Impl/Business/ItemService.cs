@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using TestApp.Services.Contracts.Business;
 using TestApp.Services.Contracts.Repository;
+using TestApp.Services.Impl.Model;
 
-namespace TestApp.Services.Impl
+namespace TestApp.Services.Impl.Business
 {
     public class ItemService : IItemService
     {

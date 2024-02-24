@@ -1,4 +1,4 @@
-﻿namespace TestApp.Services.Impl;
+﻿namespace TestApp.Services.Impl.Model;
 
 public class Item
 {

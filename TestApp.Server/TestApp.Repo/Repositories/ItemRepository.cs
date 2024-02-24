@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TestApp.Repo.DataStores;
 using TestApp.Services.Contracts.Common;
 using TestApp.Services.Contracts.Repository;
-using TestApp.Services.Impl;
+using TestApp.Services.Impl.Model;
 
 namespace TestApp.Repo.Repositories
 {
@@ -22,9 +22,8 @@ namespace TestApp.Repo.Repositories
         }
         public async Task<Item> Get(char sku)
         {
-            var item = new Item() { SKU = 'A',  Price = 50.0 };
-
-            return await Task.FromResult(item);
+            var item =  await _itemDataStore.FirstOrDefaultAsync(x => x.SKU == sku);
+            return _mapperService.Mapper.Map<Item>(item);
         }
 
         public async Task<List<Item>> Get(string skus)

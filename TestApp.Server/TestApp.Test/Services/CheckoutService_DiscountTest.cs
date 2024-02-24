@@ -11,14 +11,15 @@ using TestApp.Repo.Model;
 using TestApp.Repo.Repositories;
 using TestApp.Services.Contracts.Business;
 using TestApp.Services.Contracts.Common;
-using TestApp.Services.Impl;
-using CartRule = TestApp.Services.Impl.CartRule;
-using Item = TestApp.Services.Impl.Item;
+using TestApp.Services.Impl.Business;
+using TestApp.Services.Impl.Model;
+using CartRule = TestApp.Services.Impl.Model.CartRule;
+using Item = TestApp.Services.Impl.Model.Item;
 
 namespace TestApp.Test.Services
 {
     [TestFixture]
-    public class CheckoutServiceTest
+    public class CheckoutService_DiscountTest
     {
         private ItemService _itemService;
         private CheckoutService _checkoutService;
@@ -44,28 +45,25 @@ namespace TestApp.Test.Services
         [Test]
         public async Task CheckoutOneItem()
         {
-            var item = new Item() { SKU = 'A', Price = 50 };
+            var item = await _itemService.Get('A');
             _checkoutService.Scan(item);
 
-            Assert.That(100, Is.EqualTo(await _checkoutService.GetTotal()));
+            Assert.That(item.Price, Is.EqualTo(await _checkoutService.PriceAsync()));
         }
 
         [Test]
-        public void CheckoutZero()
+        public async Task CheckoutZero()
         {
-
-            Assert.That(0, Is.EqualTo(_checkoutService.GetTotal()));
+            Assert.That(0, Is.EqualTo(await _checkoutService.PriceAsync()));
         }
 
         [Test]
         public async Task CheckoutOne()
         {
             var item = await _itemService.Get('A');
-
-
             _checkoutService.Scan(item);
 
-            Assert.That(50, Is.EqualTo(_checkoutService.GetTotal()));
+            Assert.That(item.Price, Is.EqualTo(await _checkoutService.PriceAsync()));
         }
 
         [TestCase("A", 50)]
@@ -80,7 +78,7 @@ namespace TestApp.Test.Services
 
             _checkoutService.Scan(item);
 
-            Assert.That(val, Is.EqualTo(_checkoutService.GetTotal()));
+            Assert.That(val, Is.EqualTo(await _checkoutService.PriceAsync()));
         }
     }
 

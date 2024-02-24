@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using TestApp.Services.Contracts.Common;
 
-namespace TestApp.Services.Impl
+namespace TestApp.Services.Impl.Model
 {
-    public class AutoMapperService: IMapperService
+    public class AutoMapperService : IMapperService
     {
         private IMapper _mapper;
         private MapperConfigurationExpression _baseConfig;
@@ -21,7 +21,7 @@ namespace TestApp.Services.Impl
         {
             _baseConfig.AddProfile(profile);
         }
-        public  void Initialize()
+        public void Initialize()
         {
             var config = new MapperConfiguration(_baseConfig);
             _mapper = config.CreateMapper();

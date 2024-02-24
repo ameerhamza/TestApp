@@ -5,11 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using TestApp.Services.Impl.Model;
 
-namespace TestApp.Services.Contracts.Repository
+namespace TestApp.Services.Contracts.Business
 {
-    public interface IRuleRepository
+    public interface IRuleOperation
     {
-        Task<List<CartRule>> Get();
-        Task<CartRule> Get(char SKU);
+        double EvaluateRule(double price, int qty);
     }
 }

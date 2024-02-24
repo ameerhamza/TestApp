@@ -6,21 +6,24 @@ using System.Text;
 using System.Threading.Tasks;
 using TestApp.Services.Contracts.Business;
 using TestApp.Services.Contracts.Repository;
+using TestApp.Services.Impl.Construction;
+using TestApp.Services.Impl.Model;
 
-namespace TestApp.Services.Impl
+namespace TestApp.Services.Impl.Business
 {
     public class CheckoutService : ICheckoutService
     {
         private readonly IRuleRepository _ruleRepository;
         private readonly Cart _cart;
-        private List<CartRule> Rules;
+        private List<CartRule> _rules;
+        private double? _total;
 
         public CheckoutService(IRuleRepository ruleRepository)
         {
             _ruleRepository = ruleRepository;
             _cart = new Cart();
         }
-        
+
 
         public void Scan(Item item)
         {
@@ -34,24 +37,29 @@ namespace TestApp.Services.Impl
             }
         }
 
-        public async Task<double> GetTotal()
+        public async Task<double> PriceAsync()
         {
-            Rules ??= await _ruleRepository.Get();
+            if(_rules == null)
+                _rules = await _ruleRepository.Get();
+
             var total = 0.0;
             _cart.GetCartItems().ForEach(item =>
             {
-                var count = _cart.GetItemCount(item.SKU);
+                var qty = _cart.GetItemCount(item.SKU);
+                var rules = _rules.Where(x => x.SKU == item.SKU).ToList();
+                var ruleOperation = RuleOperationFactory.CreateOperation(rules, qty);
 
-                var rule = Rules.Where(x => x.SKU == item.SKU && x.StartQty < count)
-                    .MaxBy(x => x.Discount);
-                
-                var discount = rule?.Discount ?? 0;
-                var price = item.Price * count;
-
-                total += price - discount * price;
+                total += ruleOperation.EvaluateRule(item.Price, qty);
             });
 
             return total;
+        }
+
+        public async Task<double> TotalAsync()
+        {
+            _total = await PriceAsync();
+
+            return _total.Value;
         }
     }
 }

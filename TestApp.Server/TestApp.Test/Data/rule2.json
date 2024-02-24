@@ -1,0 +1,27 @@
+[
+  {
+    "Id": 1,
+    "SKU": "A",
+    "StartQty": 3,
+    "EndQty": 5,
+    "Discount": 0.1,
+    "Priority": 2,
+    "RuleType":  0 
+  },
+  {
+    "Id": 1,
+    "SKU": "A",
+    "Multiple": 3,
+    "MultipleDiscount": 20.0,
+    "Priority": 1,
+    "RuleType": 1
+  },
+  {
+    "Id": 1,
+    "SKU": "B",
+    "Multiple": 2,
+    "MultipleDiscount": 15.0,
+    "Priority": 1,
+    "RuleType": 1
+  }
+]
