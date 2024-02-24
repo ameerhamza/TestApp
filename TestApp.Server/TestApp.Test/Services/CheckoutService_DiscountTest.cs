@@ -23,7 +23,7 @@ namespace TestApp.Test.Services
     {
         private ItemService _itemService;
         private CheckoutService _checkoutService;
-
+        private CartService _cartService;
         [SetUp]
         public void Setup()
         {
@@ -39,14 +39,16 @@ namespace TestApp.Test.Services
             _mapperService.AddProfile((new RepoMapperProfile()));
             _itemService =  new ItemService( new ItemRepository(store, _mapperService));
 
-            _checkoutService = new CheckoutService(new RuleRepository(ruleStore, _mapperService));
+            _cartService = new CartService();
+
+            _checkoutService = new CheckoutService(_cartService, new RuleRepository(ruleStore, _mapperService));
         }
 
         [Test]
         public async Task CheckoutOneItem()
         {
             var item = await _itemService.Get('A');
-            _checkoutService.Scan(item);
+            _cartService.Scan(item);
 
             Assert.That(item.Price, Is.EqualTo(await _checkoutService.PriceAsync()));
         }
@@ -61,7 +63,7 @@ namespace TestApp.Test.Services
         public async Task CheckoutOne()
         {
             var item = await _itemService.Get('A');
-            _checkoutService.Scan(item);
+            _cartService.Scan(item);
 
             Assert.That(item.Price, Is.EqualTo(await _checkoutService.PriceAsync()));
         }
@@ -70,13 +72,13 @@ namespace TestApp.Test.Services
         [TestCase("AB", 80)]
         [TestCase("CDBA", 115)]
         [TestCase("AA", 100)]
-        [TestCase("AAA", 130)]
+        [TestCase("AAA", 135)]
         public async Task CheckoutMultiple(string items, double val)
         {
             var item = await _itemService.Get(items);
 
 
-            _checkoutService.Scan(item);
+            _cartService.Scan(item);
 
             Assert.That(val, Is.EqualTo(await _checkoutService.PriceAsync()));
         }

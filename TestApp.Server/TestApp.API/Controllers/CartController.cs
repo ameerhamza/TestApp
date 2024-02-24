@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
-using TestApp.API.Model.Validators;
 using TestApp.Services.Contracts;
+using TestApp.Services.Contracts.Business;
 using TestApp.Services.Exceptions;
+using TestApp.Services.Impl.Model;
 
 namespace TestApp.API.Controllers
 {
@@ -14,18 +15,17 @@ namespace TestApp.API.Controllers
     [Route("api/[controller]")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    public class PersonsController : Controller
+    public class CartController : Controller
     {
         private readonly IMapper _mapper;
-        private readonly ILogger<PersonsController> _logger;
-        private readonly IPersonService _personService;
+        private readonly ILogger<CartController> _logger;
+        private readonly ICartService _cartService;
 
-        public PersonsController(IMapper mapper, ILogger<PersonsController> logger, 
-            IPersonService personService)
+        public CartController(IMapper mapper, ILogger<CartController> logger, ICartService cartService)
         {
             _mapper = mapper;
             _logger = logger;
-            _personService = personService;
+            _cartService = cartService;
         }
 
 
@@ -43,31 +43,26 @@ namespace TestApp.API.Controllers
         ///     }
         ///
         /// </remarks>
-        /// <param name="personDto">Person data.</param>
-        /// <returns>A newly created person.</returns>
+        /// <param name="Item">Cart Item</param>
         /// <response code="200">Returns the newly created person.</response>
         /// <response code="400">If the request is invalid.</response>
         /// /// <response code="409">If the person already exists.</response>
         [HttpPost]
-        public async Task<IActionResult> AddPerson([FromBody] Person person)
+        public async Task<IActionResult> AddItem([FromBody] Item item)
         {
             try
             {
-                var savedPerson = await _personService.AddPersonAsync(_mapper.Map<IPerson>(person));
+                await _cartService.Scan(item);
 
-                return Ok(_mapper.Map<Person>(savedPerson));
-            }
-            catch (AlreadyExistsException aex)
-            {
-                _logger.LogError(aex, aex.Message, person);
-                return StatusCode(409, aex.Message);
+                return Ok();
             }
             catch (Exception e)
             {
-               _logger.LogError(e, "Error Saving Person Record", person);
-               return StatusCode(500, "Error Saving Person Record");
+                _logger.LogError(e, "Error Saving Item", item);
+                return BadRequest();
             }
-            
+
+
         }
     }
 }

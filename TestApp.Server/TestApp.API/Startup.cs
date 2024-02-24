@@ -3,13 +3,15 @@ using FluentValidation.AspNetCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
-using TestApp.API.Model;
-using TestApp.API.Model.Validators;
 using AutoMapper;
 using TestApp.Repo.Repositories;
 using TestApp.Services.Contracts;
 using TestApp.Repo.DataStores;
+using TestApp.Repo.Model;
+using TestApp.Services.Contracts.Business;
+using TestApp.Services.Contracts.Model;
 using TestApp.Services.Impl;
+using TestApp.Services.Impl.Business;
 
 namespace TestApp.API
 {
@@ -49,14 +51,11 @@ namespace TestApp.API
                 .WriteTo.File("Data/logs/log.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
-            services.AddAutoMapper(typeof(ApiMappingProfile));
-            services.AddTransient<IValidator<Person>, PersonValidator>();
+            services.AddAutoMapper(typeof(RepoMapperProfile));
 
-            services.AddValidatorsFromAssemblyContaining<PersonValidator>();
             services.AddFluentValidationAutoValidation();
             services.AddFluentValidationClientsideAdapters();
 
-          
 
             RegisterApplicationContracts(services);
 
@@ -65,17 +64,26 @@ namespace TestApp.API
 
         private static void RegisterApplicationContracts(IServiceCollection services)
         {
-            services.AddSingleton<IPerson, Services.Impl.Person>();
-            services.AddSingleton<IPersonRepository, PersonRepository>();
-            services.AddSingleton<IPersonService, PersonService>();
+            services.AddSingleton<ICheckoutService, CheckoutService>();
+            services.AddSingleton<ICartService, CartService>();
+            services.AddSingleton<IItemService, ItemService>();
 
-            services.AddSingleton<IDataStore<Services.Impl.Person>>(provider =>
+            services.AddSingleton<IDataStore<CartRule>>(provider =>
             {
                 var env = provider.GetRequiredService<IWebHostEnvironment>();
                 var basePath = env.ContentRootPath + "\\Data"; 
-                var fileName = "persons.json"; 
+                var fileName = "rule2.json"; 
 
-                return new JsonDataStore<Services.Impl.Person>(basePath, fileName);
+                return new JsonDataStore<CartRule>(basePath, fileName);
+            });
+
+            services.AddSingleton<IDataStore<Item>>(provider =>
+            {
+                var env = provider.GetRequiredService<IWebHostEnvironment>();
+                var basePath = env.ContentRootPath + "\\Data";
+                var fileName = "items.json";
+
+                return new JsonDataStore<Item>(basePath, fileName);
             });
         }
 

@@ -13,39 +13,29 @@ namespace TestApp.Services.Impl.Business
 {
     public class CheckoutService : ICheckoutService
     {
+        private readonly ICartService _cartService;
         private readonly IRuleRepository _ruleRepository;
-        private readonly Cart _cart;
+      
         private List<CartRule> _rules;
         private double? _total;
 
-        public CheckoutService(IRuleRepository ruleRepository)
+        public CheckoutService(ICartService cartService, IRuleRepository ruleRepository)
         {
+            _cartService = cartService;
             _ruleRepository = ruleRepository;
-            _cart = new Cart();
         }
 
 
-        public void Scan(Item item)
-        {
-            _cart.AddItem(item);
-        }
-        public void Scan(List<Item> items)
-        {
-            foreach (var item in items)
-            {
-                Scan(item);
-            }
-        }
-
+       
         public async Task<double> PriceAsync()
         {
             if(_rules == null)
                 _rules = await _ruleRepository.Get();
 
             var total = 0.0;
-            _cart.GetCartItems().ForEach(item =>
+            _cartService.GetCartItems().ForEach(item =>
             {
-                var qty = _cart.GetItemCount(item.SKU);
+                var qty = _cartService.GetItemCount(item.SKU);
                 var rules = _rules.Where(x => x.SKU == item.SKU).ToList();
                 var ruleOperation = RuleOperationFactory.CreateOperation(rules, qty);
 

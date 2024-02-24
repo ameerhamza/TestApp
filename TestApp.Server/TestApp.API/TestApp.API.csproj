@@ -39,6 +39,7 @@
   <ItemGroup>
     <Folder Include="Data\logs\" />
     <Folder Include="Data\" />
+    <Folder Include="Model\Validators\" />
   </ItemGroup>
 
 </Project>
