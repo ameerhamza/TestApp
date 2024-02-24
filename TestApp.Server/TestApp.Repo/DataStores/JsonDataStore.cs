@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace TestApp.Repo.DataStores
 {
-
     public class JsonDataStore<T> : IDataStore<T>
     {
         private readonly string _filePath;
@@ -17,15 +17,26 @@ namespace TestApp.Repo.DataStores
         {
             _filePath = Path.Combine(basePath, fileName);
             _items = new List<T>();
-            LoadData();
+            LoadDataAsync().Wait(); 
         }
+
+        public async Task<IEnumerable<T>> GetItemsAsync(Func<T, bool> condition)
+        {
+            return _items.Where(condition);
+        }
+
+        public async Task<T?> FirstOrDefaultAsync(Func<T, bool> condition)
+        {
+            return _items.FirstOrDefault(condition);
+        }
+
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return _items.ToList();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync(int id)
         {
             return _items.FirstOrDefault(item => GetItemId(item) == id);
         }
@@ -39,7 +50,7 @@ namespace TestApp.Repo.DataStores
         {
             SetItemId(item, _items.Count + 1);
             _items.Add(item);
-            SaveData();
+            await SaveDataAsync();
             return item;
         }
 
@@ -50,7 +61,7 @@ namespace TestApp.Repo.DataStores
             {
                 // Update existing item properties
                 UpdateItemProperties(existingItem, updatedItem);
-                SaveData();
+                await SaveDataAsync();
                 return true;
             }
 
@@ -63,14 +74,14 @@ namespace TestApp.Repo.DataStores
             if (itemToRemove != null)
             {
                 _items.Remove(itemToRemove);
-                SaveData();
+                await SaveDataAsync();
                 return true;
             }
 
             return false;
         }
 
-        private void LoadData()
+        private async Task LoadDataAsync()
         {
             if (File.Exists(_filePath))
             {
@@ -78,21 +89,21 @@ namespace TestApp.Repo.DataStores
                 {
                     using (var reader = new StreamReader(fileStream))
                     {
-                        var jsonData = reader.ReadToEnd();
+                        var jsonData = await reader.ReadToEndAsync();
                         _items = JsonConvert.DeserializeObject<List<T>>(jsonData) ?? new List<T>();
                     }
                 }
             }
         }
 
-        private void SaveData()
+        private async Task SaveDataAsync()
         {
             using (var fileStream = new FileStream(_filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
             {
                 using (var writer = new StreamWriter(fileStream))
                 {
                     var jsonData = JsonConvert.SerializeObject(_items);
-                    writer.Write(jsonData);
+                    await writer.WriteAsync(jsonData);
                 }
             }
         }
@@ -102,5 +113,4 @@ namespace TestApp.Repo.DataStores
         protected virtual void SetItemId(T item, int id) { }
         protected virtual void UpdateItemProperties(T existingItem, T updatedItem) { }
     }
-
 }

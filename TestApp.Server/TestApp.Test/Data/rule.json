@@ -1,0 +1,24 @@
+[
+  {
+    "Id": 1,
+    "SKU": "A",
+    "StartQty": 1,
+    "EndQty": 5,
+    "Discount": 0.1
+  },
+  {
+    "Id": 2,
+    "SKU": "B",
+    "StartQty": 3,
+    "EndQty": 10,
+    "Discount": 0.2
+  },
+  {
+    "Id": 3,
+    "SKU": "C",
+    "StartQty": 5,
+    "EndQty": 15,
+    "Discount": 0.15
+  }
+  // Add more cart rules as needed
+]

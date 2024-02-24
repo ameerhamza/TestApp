@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "SKU": "A",
+    "StockQty": 10,
+    "Price": 50.00
+  },
+  {
+    "Id": 2,
+    "SKU": "B",
+    "StockQty": 5,
+    "Price": 30.0
+  },
+  {
+    "Id": 3,
+    "SKU": "C",
+    "StockQty": 20,
+    "Price": 20
+  },
+  {
+    "Id": 3,
+    "SKU": "D",
+    "StockQty": 20,
+    "Price": 15
+  }
+]
