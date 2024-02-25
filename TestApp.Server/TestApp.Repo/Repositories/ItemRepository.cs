@@ -12,11 +12,14 @@ namespace TestApp.Repo.Repositories
 {
     public class ItemRepository: IItemRepository
     {
+        public ICacheManager<Model.Item> CacheManager { get; }
         private readonly IDataStore<Repo.Model.Item> _itemDataStore;
         private readonly IMapperService _mapperService;
 
-        public ItemRepository(IDataStore<Repo.Model.Item> itemDataStore, IMapperService mapperService)
+        public ItemRepository(IDataStore<Repo.Model.Item> itemDataStore, IMapperService mapperService,
+            ICacheManager<Repo.Model.Item> cacheManager)
         {
+            CacheManager = cacheManager;
             _itemDataStore = itemDataStore;
             _mapperService = mapperService;
         }

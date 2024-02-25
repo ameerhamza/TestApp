@@ -50,11 +50,11 @@ namespace TestApp.API.Controllers
         /// <response code="400">If the request is invalid.</response>
         /// /// <response code="409">If the person already exists.</response>
         [HttpGet]
-        public async Task<IActionResult> Price()
+        public async Task<IActionResult> Price(string userId)
         {
             try
             {
-                var price = await _checkoutService.PriceAsync();
+                var price = await _checkoutService.PriceAsync(userId);
 
                 return Ok(price);
             }

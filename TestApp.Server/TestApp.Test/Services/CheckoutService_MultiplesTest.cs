@@ -12,6 +12,7 @@ using TestApp.Repo.Repositories;
 using TestApp.Services.Contracts.Business;
 using TestApp.Services.Contracts.Common;
 using TestApp.Services.Impl.Business;
+using TestApp.Services.Impl.Common;
 using TestApp.Services.Impl.Model;
 using CartRule = TestApp.Services.Impl.Model.CartRule;
 using Item = TestApp.Services.Impl.Model.Item;
@@ -24,6 +25,8 @@ namespace TestApp.Test.Services
         private ItemService _itemService;
         private CheckoutService _checkoutService;
         private CartService _cartService;
+        private string _userId = "CheckoutService_MultiplesTest";
+
         [SetUp]
         public void Setup()
         {
@@ -39,7 +42,7 @@ namespace TestApp.Test.Services
             _mapperService.AddProfile((new RepoMapperProfile()));
             _itemService = new ItemService(new ItemRepository(store, _mapperService));
 
-            _cartService = new CartService();
+            _cartService = new CartService(new MemoryCacheManager<Cart>());
 
             _checkoutService = new CheckoutService(_cartService, new RuleRepository(ruleStore, _mapperService));
         }
@@ -63,38 +66,38 @@ namespace TestApp.Test.Services
             var item = await _itemService.Get(items);
 
 
-            _cartService.Scan(item);
+            _cartService.Scan(item, _userId);
 
-            Assert.That(val, Is.EqualTo(await _checkoutService.PriceAsync()));
+            Assert.That(val, Is.EqualTo(await _checkoutService.PriceAsync(_userId)));
         }
 
         [Test]
         public async Task CheckoutMultipleIncremental()
         {
             var item1 = await _itemService.Get('A');
-            _cartService.Scan(item1);
+            _cartService.Scan(item1, _userId);
 
-            Assert.That(50, Is.EqualTo(await _checkoutService.TotalAsync()));
+            Assert.That(50, Is.EqualTo(await _checkoutService.TotalAsync(_userId)));
 
             var item2 = await _itemService.Get('B');
-            _cartService.Scan(item2);
+            _cartService.Scan(item2, _userId);
 
-            Assert.That(80, Is.EqualTo(await _checkoutService.TotalAsync()));
+            Assert.That(80, Is.EqualTo(await _checkoutService.TotalAsync(_userId)));
 
             var item3 = await _itemService.Get('A');
-            _cartService.Scan(item3);
+            _cartService.Scan(item3, _userId);
 
-            Assert.That(130, Is.EqualTo(await _checkoutService.TotalAsync()));
+            Assert.That(130, Is.EqualTo(await _checkoutService.TotalAsync(_userId)));
 
             var item4 = await _itemService.Get('A');
-            _cartService.Scan(item4);
+            _cartService.Scan(item4, _userId);
 
-            Assert.That(160, Is.EqualTo(await _checkoutService.TotalAsync()));
+            Assert.That(160, Is.EqualTo(await _checkoutService.TotalAsync(_userId)));
 
             var item5 = await _itemService.Get('B');
-            _cartService.Scan(item5);
+            _cartService.Scan(item5, _userId);
 
-            Assert.That(175, Is.EqualTo(await _checkoutService.TotalAsync()));
+            Assert.That(175, Is.EqualTo(await _checkoutService.TotalAsync(_userId)));
         }
     }
 

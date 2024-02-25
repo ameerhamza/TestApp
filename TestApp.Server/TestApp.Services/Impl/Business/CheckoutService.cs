@@ -27,15 +27,15 @@ namespace TestApp.Services.Impl.Business
 
 
        
-        public async Task<double> PriceAsync()
+        public async Task<double> PriceAsync(string userId)
         {
             if(_rules == null)
                 _rules = await _ruleRepository.Get();
 
             var total = 0.0;
-            _cartService.GetCartItems().ForEach(item =>
+            _cartService.GetCartItems(userId).ForEach(item =>
             {
-                var qty = _cartService.GetItemCount(item.SKU);
+                var qty = _cartService.GetItemCount(item.SKU, userId);
                 var rules = _rules.Where(x => x.SKU == item.SKU).ToList();
                 var ruleOperation = RuleOperationFactory.CreateOperation(rules, qty);
 
@@ -45,9 +45,9 @@ namespace TestApp.Services.Impl.Business
             return total;
         }
 
-        public async Task<double> TotalAsync()
+        public async Task<double> TotalAsync(string userId)
         {
-            _total = await PriceAsync();
+            _total = await PriceAsync(userId);
 
             return _total.Value;
         }

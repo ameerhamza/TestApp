@@ -9,11 +9,12 @@ namespace TestApp.Services.Contracts.Business
 {
     public interface ICartService
     {
-        Task Scan(Item item);
+        Task Scan(Item item, string userId);
 
-        Task Scan(List<Item> item);
+        Task Scan(List<Item> item, string userId);
 
-        List<Item> GetCartItems();
-        int GetItemCount(char itemSku);
+        List<Item> GetCartItems(string userId);
+        int GetItemCount(char itemSku, string userId);
+        void ClearCart(string userId);
     }
 }

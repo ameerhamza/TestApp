@@ -9,9 +9,14 @@ using TestApp.Services.Contracts;
 using TestApp.Repo.DataStores;
 using TestApp.Repo.Model;
 using TestApp.Services.Contracts.Business;
+using TestApp.Services.Contracts.Common;
 using TestApp.Services.Contracts.Model;
+using TestApp.Services.Contracts.Repository;
 using TestApp.Services.Impl;
 using TestApp.Services.Impl.Business;
+using TestApp.Services.Impl.Model;
+using CartRule = TestApp.Repo.Model.CartRule;
+using Item = TestApp.Repo.Model.Item;
 
 namespace TestApp.API
 {
@@ -67,6 +72,9 @@ namespace TestApp.API
             services.AddSingleton<ICheckoutService, CheckoutService>();
             services.AddSingleton<ICartService, CartService>();
             services.AddSingleton<IItemService, ItemService>();
+            services.AddSingleton<IRuleRepository, RuleRepository>();
+            services.AddSingleton<IItemRepository, ItemRepository>();
+            services.AddSingleton<IMapperService, AutoMapperService>();
 
             services.AddSingleton<IDataStore<CartRule>>(provider =>
             {

@@ -10,7 +10,7 @@ namespace TestApp.Services.Contracts.Business
 {
     public interface ICheckoutService
     {
-        Task<double> PriceAsync();
+        Task<double> PriceAsync(string userId);
 
         
     }
