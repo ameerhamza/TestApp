@@ -40,7 +40,7 @@ namespace TestApp.Test.Services
 
             IMapperService _mapperService = new AutoMapperService();
             _mapperService.AddProfile((new RepoMapperProfile()));
-            _itemService =  new ItemService( new ItemRepository(store, _mapperService));
+            _itemService =  new ItemService( new ItemRepository(store, _mapperService, new MemoryCacheManager<Repo.Model.Item>()));
 
             _cartService = new CartService(new MemoryCacheManager<Cart>());
 
